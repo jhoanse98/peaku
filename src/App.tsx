@@ -4,6 +4,7 @@ import "./App.css";
 import Consume from "./components/Consume";
 import Losts from "./components/Losts";
 import Costs from "./components/Costs";
+import LostsFetched from "./components/LostsFetched";
 
 const App: React.FC = (): JSX.Element => {
   return (
@@ -11,6 +12,7 @@ const App: React.FC = (): JSX.Element => {
       <Consume />
       <Costs />
       <Losts />
+      <LostsFetched />
     </>
   );
 };

@@ -13,10 +13,12 @@ import {
 } from "d3";
 /** Styles */
 import "../App.css";
-import { consumeEnergy } from "../utils/mocks/data.mock";
 import { LineData } from "../utils/models/Energy.models";
+import useReaderExcel from "../hooks/useReaderExcel";
 
-const Losts: React.FC = (): JSX.Element => {
+const LostsFetched: React.FC = (): JSX.Element => {
+  const [mockup, setMockup] = React.useState<any[]>([]);
+  const { fetchDataExcel, getDataFromExcel } = useReaderExcel();
   const svgRef = React.useRef(null);
 
   React.useEffect(() => {
@@ -31,7 +33,7 @@ const Losts: React.FC = (): JSX.Element => {
       const lines: { [key: string]: LineData } = {};
       const colors = scaleOrdinal(schemeCategory10);
 
-      consumeEnergy.forEach((d) => {
+      mockup.forEach((d) => {
         const date = new Date(d.date);
         Object.keys(d).forEach((key) => {
           if (key !== "line" && key !== "date") {
@@ -43,7 +45,7 @@ const Losts: React.FC = (): JSX.Element => {
       });
 
       const x = scaleTime()
-        .domain(extent(consumeEnergy, (d) => new Date(d.date)) as [Date, Date])
+        .domain(extent(mockup, (d) => new Date(d.date)) as [Date, Date])
         .range([margin.left, width - margin.right]);
 
       const y = scaleLinear()
@@ -124,7 +126,17 @@ const Losts: React.FC = (): JSX.Element => {
           .attr("alignment-baseline", "middle");
       });
     }
-  }, [svgRef]);
+  }, [svgRef, mockup]);
+
+  React.useEffect(() => {
+    const getData = async () => {
+      const fetchData: ArrayBuffer = await fetchDataExcel();
+      const response = await getDataFromExcel(fetchData);
+      setMockup(response);
+    };
+
+    getData();
+  }, [getDataFromExcel, fetchDataExcel]);
 
   return (
     <div className="container" data-testid="container">
@@ -136,4 +148,4 @@ const Losts: React.FC = (): JSX.Element => {
   );
 };
 
-export default Losts;
+export default LostsFetched;
